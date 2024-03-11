@@ -1,0 +1,22 @@
+$container = "OU=YourOU,DC=YourDomain,DC=com"
+
+# Get the list of computers in the container
+$computers = Get-ADComputer -Filter * -SearchBase $container
+
+foreach ($computer in $computers) {
+    # Define the script block to run on the remote machine
+    $scriptBlock = {
+        # Empty the recycle bin
+        Clear-RecycleBin -Force -ErrorAction SilentlyContinue
+
+        # Delete temp files
+        $tempPaths = @("$env:TEMP", "$env:windir\Temp")
+
+        foreach ($path in $tempPaths) {
+            Get-ChildItem -Path $path -Recurse | Remove-Item -Force -Recurse -ErrorAction SilentlyContinue
+        }
+    }
+
+    # Execute the script block on the remote computer
+    Invoke-Command -ComputerName $computer.Name -ScriptBlock $scriptBlock -ErrorAction SilentlyContinue
+}
