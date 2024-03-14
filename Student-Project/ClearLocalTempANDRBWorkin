@@ -1,3 +1,4 @@
+#Nice maybe add some minimal comment to your code 
 $objShell = New-Object -ComObject Shell.Application 
 
 $objFolder = $objShell.Namespace(0xA) 
